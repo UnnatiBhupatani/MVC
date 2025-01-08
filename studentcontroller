@@ -1,0 +1,82 @@
+<?php
+require_once 'Student.php';
+class StudentController
+{
+
+    private $student;
+    public function __construct()
+    {
+        $this->student = new Student();
+    }
+    public function addStudent($pid, $name, $email)
+    {
+
+        $isValid = $this->student->validate($pid, $name, $email);
+        if ($isValid) {
+
+            $_SESSION['stud_data'][] = [$pid, $name, $email];
+        } else {
+        }
+
+        echo "<br>data stored<br><br><br>";
+        // print_r($_SESSION['stud_data']);
+
+    }
+
+    // public function validateId($pid)
+    // {
+    //     return $this->student->validateId($pid);
+    // }
+
+    private $getData;
+    public function display()
+    {
+
+        if (!isset($_SESSION['stud_data'])) {
+            $_SESSION['stud_data'] = [];
+        }
+
+        $this->getData = $_SESSION['stud_data'];
+        return $this->getData;
+    }
+
+
+    public function delete($index)
+    {
+        if (isset($_SESSION['stud_data'][$index])) {
+            unset($_SESSION['stud_data'][$index]);
+            // Re-index the array to prevent gaps
+            $_SESSION['stud_data'] = array_values($_SESSION['stud_data']);
+            echo "Data deleted successfully.";
+        } else {
+            echo "Invalid index. Data not found.";
+        }
+    }
+
+    public function getStudent($index)
+    {
+        if (isset($_SESSION['stud_data'][$index])) {
+            return $_SESSION['stud_data'][$index];
+        }
+        return null;
+    }
+
+    public function update($index, $pid, $name, $email)
+    {
+        $isValid = $this->student->validate($pid, $name, $email);
+        //if (empty($isValid['pid']) && empty($isValid['name']) && empty($isValid['email'])) {
+        if (isset($_SESSION['stud_data'][$index])) {
+            $_SESSION['stud_data'][$index] = [$pid, $name, $email];
+
+            echo "Data updated successfully.";
+        } else {
+            echo "Invalid index. Data not found.";
+        }
+
+        return $isValid;
+    }
+}
+//$stud = new StudentController();
+//$stud->addStudent($pid,$name,$email);
+
+// $stud->display();
