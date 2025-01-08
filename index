@@ -1,0 +1,112 @@
+<?php 
+session_start();
+require_once 'StudentController.php';
+$stud = new StudentController();
+
+$error=[];
+
+
+if (isset($_POST["submit"])) {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (!isset($_SESSION['stud_data'])) {
+            $_SESSION['stud_data'] = [];
+        }
+
+        $pid = $_POST['pid'];
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+
+        if(isset($_POST['update_index']) && $_POST['update_index'] !==''){
+            $updateIndex = intval($_POST['update_index']);
+            $error = $stud->update($updateIndex, $pid, $name, $email);
+        }else{
+            $error = $stud->addStudent($pid, $name, $email);
+        }
+
+       // $error=$stud->addStudent($pid, $name, $email);
+
+        
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    
+        //header("Location:StudentController.php");
+    
+    }
+
+    
+}
+if (isset($_GET['delete'])) {
+    $index = intval($_GET['delete']);
+    $stud->delete($index);
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit();
+}
+
+$updateData = null;
+if (isset($_GET['update'])) {
+    $index = intval($_GET['update']);
+    $updateData = $stud->getStudent($index);
+}
+//    session_destroy();
+
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MVC</title>
+</head>
+<body>
+    <form method="POST" action="">
+
+        <h2>Student Detail</h2>
+        <!-- <input type="hidden" name="key"> -->
+        PID:<input type="text" name="pid" value="<?php echo $updateData ? $updateData[0] : ''; ?>">
+        <span><?php echo isset($error['pid']) ? $error['pid'] : ''; ?></span><br><br>
+
+        Name:<input type="text" name="name" value="<?php echo $updateData ? $updateData[1] : ''; ?>">
+        <span><?php echo isset($error['name']) ? $error['name'] : ''; ?></span><br><br>
+
+        Email:<input type="text" name="email" value="<?php echo $updateData ? $updateData[2] : ''; ?>">
+        <span><?php echo isset($error['email']) ? $error['email'] : ''; ?></span><br><br>
+
+        <button name="submit">Submit</button>
+        
+    </form>
+    <?php
+
+$getData = $stud->display();
+//print_r($getData);
+
+?>
+<table border="1">
+    <tr>
+        <th>PID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>update</th>
+        <th>delete</th>
+    </tr>
+    <?php foreach ($getData as $index => $value): 
+       ?>
+    <tr>
+        <td><?php echo $value[0]; ?></td>
+        <td><?php echo $value[1]; ?></td>
+        <td><?php echo $value[2]; ?></td>
+        
+       
+<td><a href="?update=<?php echo $index; ?>">Update</a></td>
+<td><a href="?delete=<?php echo $index; ?>">Delete</a></td>
+
+        
+        
+
+    </tr>
+    <?php endforeach; ?>
+  </table>
+
+
+</body>
+</html>
