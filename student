@@ -1,0 +1,60 @@
+<?php
+
+class Student
+{
+
+    public function validate($pid, $name, $email)
+    {
+        $error = [
+            'pid' => '',
+            'name' => '',
+            'email' => '',
+        ];
+        //include_once 'index.php';
+        // $this->error[] = [];
+
+        if (empty($pid) || !is_numeric($pid)) {
+            echo "pid error";
+
+            return false;
+
+            //$error['pid'] = 'pid must not empty or must numeric';
+
+        } elseif (empty($name)) {
+            echo "name error ";
+
+            return false;
+
+            //$error['name'] = 'name must not empty ';
+
+        } elseif (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "email error ";
+
+            return false;
+
+            //$error['email'] = 'email must not empty or must be in email form';
+
+        }
+        return $error;
+    }
+
+    public function deleteStudent($index)
+    {
+        if (isset($_SESSION['stud_data'][$index])) {
+            unset($_SESSION['stud_data'][$index]);
+        }
+    }
+
+    public function update($key, $pid, $name, $email)
+    {
+
+        if (isset($_POST['update'])) {
+            if (isset($_SESSION['stud_data'][$key])) {
+                $_SESSION['stud_data'][$key] = [$pid, $name, $email];
+                echo "data updated successfully";
+            } else {
+                echo "invalid key, data not found";
+            }
+        }
+    }
+}
